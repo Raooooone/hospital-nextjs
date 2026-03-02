@@ -33,7 +33,7 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "prisma.config.ts.bak"  ],
   "exclude": [
     "node_modules"
   ]

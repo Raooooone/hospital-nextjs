@@ -1,5 +1,12 @@
-// --- À AJOUTER/MODIFIER DANS VOTRE schema.prisma ---
 
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -53,4 +60,28 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+model Appointment {
+  id          String   @id @default(cuid())
+  date        DateTime
+  status      String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  reason      String?
+
+  // Relation avec le Docteur (User)
+  doctorId    String
+  doctor      User     @relation("DoctorAppointments", fields: [doctorId], references: [id])
+
+  // Relation avec le Patient (User)
+  patientId   String
+  patient     User     @relation("PatientAppointments", fields: [patientId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }

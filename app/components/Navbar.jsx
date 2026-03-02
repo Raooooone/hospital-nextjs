@@ -1,27 +1,34 @@
-import Link from "next/link";
+// app/components/Navbar.jsx
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import LogoutButton from "./LogoutButton";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Vérifie bien ce chemin !
+import Link from "next/link";
+import LogoutButton from "./LogoutButton"; // On sépare le bouton car il a besoin de "use client"
 
 export default async function Navbar() {
   const session = await getServerSession(authOptions);
 
-  if (!session) return null; // Ne rien afficher si non connecté
-
   return (
-    <nav className="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
-      <div className="font-bold text-xl">
-        MediCare App
-      </div>
-      <div className="flex gap-4 items-center">
-        <span className="text-sm bg-blue-800 px-3 py-1 rounded-full">
-          Rôle : {session.user.role}
-        </span>
-        {session.user.role === "ADMIN" && <Link href="/admin">Dashboard Admin</Link>}
-        {session.user.role === "MEDECIN" && <Link href="/medecin">Espace Médecin</Link>}
-        {session.user.role === "PATIENT" && <Link href="/patient">Espace Patient</Link>}
+    <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+      <div className="flex items-center gap-8">
+        <Link href="/" className="text-xl font-bold text-blue-600">MediCare</Link>
         
-        <LogoutButton />
+        {session && (
+          <ul className="flex gap-4 text-gray-700 font-medium">
+             {/* Tes liens dynamiques ici selon session.user.role */}
+             {session.user.role === "ADMIN" && <li><Link href="/admin">Dashboard Admin</Link></li>}
+          </ul>
+        )}
+      </div>
+
+      <div>
+        {session ? (
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600">Bonjour, {session.user.name}</span>
+            <LogoutButton /> 
+          </div>
+        ) : (
+          <Link href="/auth/login" className="bg-blue-600 text-white px-4 py-2 rounded">Connexion</Link>
+        )}
       </div>
     </nav>
   );
